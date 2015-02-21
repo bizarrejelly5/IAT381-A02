@@ -1,6 +1,7 @@
 /*
 show the number[i]s at the bottom of the screen. The number[i]s can be dragged and placed into boxes to determine the alarm
 */
+
 var stage = new PIXI.Stage(0x97c56e, true);
 
 var renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight, null);
@@ -20,14 +21,29 @@ var box = [];
 var refNumber = [];
 var hour = [];
 var minute = [];
-var currentTime = new Date();
-var currentHour = "" + currentTime.getHours() + "";
-if(currentHour.length == 1){
-	currentHour = "0" + currentTime.getHours() + "";
-}
-var currentMinute = "" + currentTime.getMinutes() + "";
-if(currentMinute.length == 1){
-	currentMinute = "0" + currentTime.getMinutes() + "";
+var currentHour = [];
+var currentMinute = [];
+
+//set the timer
+var text = new PIXI.Text(currentHour + " : " + currentMinute, {font:"50px Arial", fill:"red"});
+
+//shows the current time
+function timer(){
+	var currentTime = new Date();
+	currentHour = "" + currentTime.getHours() + "";
+	
+	//hours are 1 character long if the time is from 1 to 9 AM, this adds a 0 to the front
+	if(currentHour.length == 1){
+		currentHour = "0" + currentTime.getHours() + "";
+	}
+	currentMinute = "" + currentTime.getMinutes() + "";
+	if(currentMinute.length == 1){
+		currentMinute = "0" + currentTime.getMinutes() + "";
+	}
+	
+	//display the time at the top of the screen and update it
+	text.setText(currentHour + " : " + currentMinute, {font:"50px Arial", fill:"red"});
+	stage.addChild(text);
 }
 
 //put the number[i]s on the bottom of the screen
@@ -131,13 +147,13 @@ function intersect(){
 		 number[i].position.x < box[3].position.x + box[3].width &&
 		 number[i].position.y > box[3].position.y &&
 		 number[i].position.y < box[3].position.y + box[3].height){
-		//	number[i].position.x = box[j];
 			minute[1] = refNumber[i];
 		}
 	}
-
+	
 	 if(hour[0] == currentHour[0] && hour[1] == currentHour[1] && minute[0] == currentMinute[0] && minute[1] == currentMinute[1]){
 		 console.log("Clock set to current time, used for testing");
+		 //add some functionality to adding new alarm, deleting alarm
 	 }
 }
 
@@ -147,6 +163,10 @@ function animate() {
 	renderer.render(stage);
 }
 
+//update timer every one second
+var myVar=setInterval(function(){
+		timer();
+},1000);
 
 createBoxes();
 createNumbers();
