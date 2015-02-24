@@ -222,7 +222,6 @@ function addAlarm(){
 		//remove and then add numbers back to front of the canvas
 		for (var i=0; i < 10; i++) {
 			stage.removeChild(number[i]);
-			stage.addChild(number[i]);
 		}
 		addAlarm();
 	};
