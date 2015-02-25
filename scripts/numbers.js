@@ -128,12 +128,12 @@ function duplicateNumber(x){
 }
 
 function createBoxes(){
-	//make a box that user puts the number[i]s in
+	//make a box that user puts the numbers in
 	for(var i = 0; i < 4; i++){
 		box[i] = new PIXI.Graphics();
 		box[i].beginFill(0xFFFFFF);
 		box[i].lineStyle(5, 0x000000);
-		box[i].position.x = i * 250 + 200;
+		box[i].position.x =  i * window.innerWidth/4 + (window.innerWidth/8 - 40);
 		box[i].position.y =  newAlarmPos * 100;
 		box[i].drawRect(0, 0, 75, 75);
 		stage.addChild(box[i]);
