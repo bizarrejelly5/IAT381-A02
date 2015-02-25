@@ -28,6 +28,11 @@ var currentMinute = [];
 var newAlarmPos = 1;
 var onOff, onOff2 = false;
 
+//only allow up to 3 alarms
+var alarmLimit = 3;
+
+//tracks which number is deleted after 5 seconds
+var deleteReference = 0;
 
 //set the timer
 var text = new PIXI.Text(currentHour + " : " + currentMinute, {font:"50px Arial", fill:"red"});
@@ -77,6 +82,7 @@ function createNumbers(i)
 		number[i].mousedown = number[i].touchstart = function(data)
 		{
 			duplicateNumber(i);
+			deleteReference++;
 		}
 		
 		// move the sprite to its designated position
@@ -88,43 +94,64 @@ function createNumbers(i)
 };
 
 function duplicateNumber(x){
+	var reference = deleteReference;
 	var texture = PIXI.Texture.fromImage("images/" + x + ".png");
-	clonedNumber[x] = new PIXI.Sprite(texture);
+	clonedNumber[clonedNumber.length] = new PIXI.Sprite(texture);
+
+	clonedNumber[clonedNumber.length-1].interactive = true;
+	clonedNumber[clonedNumber.length-1].buttonMode = true;
 	
-	clonedNumber[x].interactive = true;
-	clonedNumber[x].buttonMode = true;
+	//delete the array with this position
 	
-		// make it a bit bigger, so its easier to touch
-	clonedNumber[x].scale.x = clonedNumber[x].scale.y = screen.width/10000;
-	clonedNumber[x].position.x = x * window.innerWidth/10 + 50
-	clonedNumber[x].position.y = window.innerHeight - 100;
 	
-	clonedNumber[x].mousedown = clonedNumber[x].touchstart = function(data)
+	//variable to determine if the number is pinned to the alarm, if not, they will be destroyed after 5 seconds
+	var pinnedNumber = false;
+	
+	// make it a bit bigger, so its easier to touch
+	clonedNumber[reference].scale.x = clonedNumber[reference].scale.y = screen.width/10000;
+	clonedNumber[reference].position.x = x * window.innerWidth/10 + 50
+	clonedNumber[reference].position.y = window.innerHeight - 100;
+		
+	clonedNumber[reference].mousedown = clonedNumber[reference].touchstart = function(data)
 		{
 			this.data = data;
 			this.alpha = 0.9;
 			this.dragging = true;
 		}
 		
-		clonedNumber[x].mouseup = clonedNumber[x].mouseupoutside = clonedNumber[x].touchend = clonedNumber[x].touchendoutside = function(data)
+		clonedNumber[reference].mouseup = clonedNumber[reference].mouseupoutside = clonedNumber[reference].touchend = clonedNumber[reference].touchendoutside = function(data)
 		{
 			this.alpha = 1
 			this.dragging = false;
 			// set the interaction data to null
 			this.data = null;
-			intersect(clonedNumber[x], x);
+			intersect(clonedNumber[reference], clonedNumber.length-1, pinnedNumber, reference);
 		};
-		clonedNumber[x].mousemove = clonedNumber[x].touchmove = function(data)
+		clonedNumber[reference].mousemove = clonedNumber[reference].touchmove = function(data)
 		{
 			if(this.dragging)
 			{
 				// need to get parent coords..
 				var newPosition = this.data.getLocalPosition(this.parent);
-				clonedNumber[x].position.x = newPosition.x;
-				clonedNumber[x].position.y = newPosition.y;
+				clonedNumber[reference].position.x = newPosition.x;
+				clonedNumber[reference].position.y = newPosition.y;
 			}
 		}
-		stage.addChild(clonedNumber[x]);
+		stage.addChild(clonedNumber[reference]);
+		
+
+		
+}
+
+function pin(x){
+	if(x == false){
+		console.log("pinned");
+		return x = true;
+	}
+	else{
+		return x = false;
+	}
+	
 }
 
 function createBoxes(){
@@ -144,7 +171,7 @@ function createBoxes(){
 }
 
 
-function intersect(obj, num){
+function intersect(obj, num, pinned, reference){
 	//bounding box to determine if a number is in a box
 	
 	//currently only the 0 number works, need to make it so that they all work by changing number[i][0] to something like number[i][x]
@@ -158,27 +185,37 @@ function intersect(obj, num){
 		 obj.position.y > box[0].position.y &&
 		 obj.position.y < box[0].position.y + box[0].height){
 			hour[0] = num;
-			console.log("it works");
+			pinned = true;
 		}
 		 if(obj.position.x > box[1].position.x && 
 		 obj.position.x < box[1].position.x + box[1].width &&
 		 obj.position.y > box[1].position.y &&
 		 obj.position.y < box[1].position.y + box[1].height){
 			hour[1] = num;
+			pinned = true;
 		}
 		 if(obj.position.x > box[2].position.x && 
 		 obj.position.x < box[2].position.x + box[2].width &&
 		 obj.position.y > box[2].position.y &&
 		 obj.position.y < box[2].position.y + box[2].height){
 			minute[0] = num;
+			pinned = true;
 		}
 		 if(obj.position.x > box[3].position.x && 
 		 obj.position.x < box[3].position.x + box[3].width &&
 		 obj.position.y > box[3].position.y &&
 		 obj.position.y < box[3].position.y + box[3].height){
 			minute[1] = num;
+			pinned = true;
 		}
-		
+	}
+	
+	//remove the number after 5 seconds
+	if(pinned == false){
+		 var  something = setInterval(function(){
+		 //removes the last clone
+			 stage.removeChild(clonedNumber[reference]);
+		 },5000);
 	}
 }
 
@@ -187,6 +224,9 @@ function checkAlarm(){
 	//console.log(minute[1]);
 	if(hour[0] == currentHour[0] && hour[1] == currentHour[1] && minute[0] == currentMinute[0] && minute[1] == currentMinute[1]){
 		console.log("Clock set to current time, used for testing");
+		//play alarm
+		var audio = new Audio('audio/alarm.wav');
+		audio.play();
 		//add some functionality to adding new alarm, deleting alarm
 	 }
 }
@@ -218,17 +258,20 @@ function addAlarm(){
 	newAlarmBox.interactive = true;
 	newAlarmBox.buttonMode = true;
 	newAlarmBox.mousedown = newAlarmBox.touchstart = function(data){
-		this.data = data;
-		newAlarmPos += 1;
-		console.log(newAlarmPos);
-		createBoxes();
-		newAlarmBox.clear();
-		stage.removeChild(addAlarmText) 
-		//remove and then add numbers back to front of the canvas
-		for (var i=0; i < 10; i++) {
-			stage.removeChild(number[i]);
+		if(alarmLimit > 1){
+			alarmLimit -= 1;
+			console.log(alarmLimit);
+			this.data = data;
+			newAlarmPos += 1;
+			createBoxes();
+			newAlarmBox.clear();
+			stage.removeChild(addAlarmText) 
+			//remove and then add numbers back to front of the canvas
+			for (var i=0; i < 10; i++) {
+				stage.removeChild(number[i]);
+			}
+			addAlarm();	
 		}
-		addAlarm();
 	};
 }
 
