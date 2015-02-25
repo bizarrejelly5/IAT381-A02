@@ -17,6 +17,8 @@ requestAnimFrame( animate );
 
 //the sprites, number[i]s and hour/minute boxes
 var number = [];
+//cloned numbers when clicked, 
+var clonedNumber = [];
 var box = [];
 var refNumber = [];
 var hour = [];
@@ -46,9 +48,9 @@ function timer(){
 	if(currentHour.length == 1){
 		currentHour = "0" + currentTime.getHours() + "";
 	}
-	currentMinute = "" + currentTime.getSeconds() + "";
+	currentMinute = "" + currentTime.getMinutes() + "";
 	if(currentMinute.length == 1){
-		currentMinute = "0" + currentTime.getSeconds() + "";
+		currentMinute = "0" + currentTime.getMinutes() + "";
 	}
 	
 	//display the time at the top of the screen and update it
@@ -59,11 +61,6 @@ function timer(){
 //put the number[i]s on the bottom of the screen
 function createNumbers(i)
 {	
-	//for (var i=0; i < 10; i++) {
-		//store what number[i] it actually is so we can use it for the clock
-		refNumber[i] = i;
-		
-		
 		var texture = PIXI.Texture.fromImage("images/" + i + ".png");
 		number[i] = new PIXI.Sprite(texture);
 		
@@ -77,45 +74,9 @@ function createNumbers(i)
 		// make it a bit bigger, so its easier to touch
 		number[i].scale.x = number[i].scale.y = screen.width/10000;
 
-		
-		// use the mousedown and touchstart
 		number[i].mousedown = number[i].touchstart = function(data)
 		{
-		
-			this.data = data;
-			this.alpha = 0.9;
-			this.dragging = true;
-			
-			//make a clone of the number when clicked
-			console.log("hi");
-			number[i][0] = new PIXI.Sprite(texture);
-			number[i][0].scale.x = number[i][0].scale.y = screen.width/10000;
-			stage.addChild(number[i][0]);
-			
-		}
-
-		
-		// set the events for when the mouse is released or a touch is released
-		number[i].mouseup = number[i].mouseupoutside = number[i].touchend = number[i].touchendoutside = function(data)
-		{
-			this.alpha = 1
-			this.dragging = false;
-			// set the interaction data to null
-			this.data = null;
-			//intersect();
-		};
-		
-		// set the callbacks for when the mouse or a touch moves
-		number[i].mousemove = number[i].touchmove = function(data)
-		{
-			if(this.dragging)
-			{
-				// need to get parent coords..
-				var newPosition = this.data.getLocalPosition(this.parent);
-				number[i][0].position.x = newPosition.x;
-				number[i][0].position.y = newPosition.y;
-				intersect();
-			}
+			duplicateNumber(i);
 		}
 		
 		// move the sprite to its designated position
@@ -125,6 +86,46 @@ function createNumbers(i)
 		// add it to the stage
 		stage.addChild(number[i]);
 };
+
+function duplicateNumber(x){
+	var texture = PIXI.Texture.fromImage("images/" + x + ".png");
+	clonedNumber[x] = new PIXI.Sprite(texture);
+	
+	clonedNumber[x].interactive = true;
+	clonedNumber[x].buttonMode = true;
+	
+		// make it a bit bigger, so its easier to touch
+	clonedNumber[x].scale.x = clonedNumber[x].scale.y = screen.width/10000;
+	clonedNumber[x].position.x = x * window.innerWidth/10 + 50
+	clonedNumber[x].position.y = window.innerHeight - 100;
+	
+	clonedNumber[x].mousedown = clonedNumber[x].touchstart = function(data)
+		{
+			this.data = data;
+			this.alpha = 0.9;
+			this.dragging = true;
+		}
+		
+		clonedNumber[x].mouseup = clonedNumber[x].mouseupoutside = clonedNumber[x].touchend = clonedNumber[x].touchendoutside = function(data)
+		{
+			this.alpha = 1
+			this.dragging = false;
+			// set the interaction data to null
+			this.data = null;
+			intersect(clonedNumber[x], x);
+		};
+		clonedNumber[x].mousemove = clonedNumber[x].touchmove = function(data)
+		{
+			if(this.dragging)
+			{
+				// need to get parent coords..
+				var newPosition = this.data.getLocalPosition(this.parent);
+				clonedNumber[x].position.x = newPosition.x;
+				clonedNumber[x].position.y = newPosition.y;
+			}
+		}
+		stage.addChild(clonedNumber[x]);
+}
 
 function createBoxes(){
 	//make a box that user puts the number[i]s in
@@ -143,37 +144,41 @@ function createBoxes(){
 }
 
 
-function intersect(){
+function intersect(obj, num){
 	//bounding box to determine if a number is in a box
-	console.log(number[1]);
+	
 	//currently only the 0 number works, need to make it so that they all work by changing number[i][0] to something like number[i][x]
+	 console.log("num pos x: " + obj.position.x + " num pos y: " + obj.position.y);
+	 console.log("box pos x: " + box[0].position.x + " box pos y: " + box[0].position.y);
+	 console.log("box width: " + box[0].width + "box height: " + box[0].height);
 	
 	for (var i = 0; i < 10; i++) {
-		if(number[i][0].position.x > box[0].position.x && 
-		 number[i][0].position.x < box[0].position.x + box[0].width &&
-		 number[i][0].position.y > box[0].position.y &&
-		 number[i][0].position.y < box[0].position.y + box[0].height){
-			hour[0] = refNumber[i];
+		if(obj.position.x > box[0].position.x && 
+		 obj.position.x < box[0].position.x + box[0].width &&
+		 obj.position.y > box[0].position.y &&
+		 obj.position.y < box[0].position.y + box[0].height){
+			hour[0] = num;
+			console.log("it works");
 		}
-		 if(number[i][0].position.x > box[1].position.x && 
-		 number[i][0].position.x < box[1].position.x + box[1].width &&
-		 number[i][0].position.y > box[1].position.y &&
-		 number[i][0].position.y < box[1].position.y + box[1].height){
-			hour[1] = refNumber[i];
+		 if(obj.position.x > box[1].position.x && 
+		 obj.position.x < box[1].position.x + box[1].width &&
+		 obj.position.y > box[1].position.y &&
+		 obj.position.y < box[1].position.y + box[1].height){
+			hour[1] = num;
 		}
-		 if(number[i][0].position.x > box[2].position.x && 
-		 number[i][0].position.x < box[2].position.x + box[2].width &&
-		 number[i][0].position.y > box[2].position.y &&
-		 number[i][0].position.y < box[2].position.y + box[2].height){
-			minute[0] = refNumber[i];
+		 if(obj.position.x > box[2].position.x && 
+		 obj.position.x < box[2].position.x + box[2].width &&
+		 obj.position.y > box[2].position.y &&
+		 obj.position.y < box[2].position.y + box[2].height){
+			minute[0] = num;
 		}
-		 if(number[i][0].position.x > box[3].position.x && 
-		 number[i][0].position.x < box[3].position.x + box[3].width &&
-		 number[i][0].position.y > box[3].position.y &&
-		 number[i][0].position.y < box[3].position.y + box[3].height){
-			minute[1] = refNumber[i];
+		 if(obj.position.x > box[3].position.x && 
+		 obj.position.x < box[3].position.x + box[3].width &&
+		 obj.position.y > box[3].position.y &&
+		 obj.position.y < box[3].position.y + box[3].height){
+			minute[1] = num;
 		}
-		//console.log(hour[0]);
+		
 	}
 }
 
