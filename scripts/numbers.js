@@ -31,6 +31,10 @@ var onOff, onOff2 = false;
 //only allow up to 3 alarms
 var alarmLimit = 3;
 
+//alarm audio file
+var playAlarm = false;
+var audio = new Audio('audio/alarm.wav');
+
 //tracks which number is deleted after 5 seconds
 var deleteReference = 0;
 
@@ -125,7 +129,7 @@ function duplicateNumber(x){
 			this.dragging = false;
 			// set the interaction data to null
 			this.data = null;
-			intersect(clonedNumber[reference], clonedNumber.length-1, pinnedNumber, reference);
+			intersect(clonedNumber[reference], x, pinnedNumber, reference);
 		};
 		clonedNumber[reference].mousemove = clonedNumber[reference].touchmove = function(data)
 		{
@@ -157,16 +161,16 @@ function pin(x){
 function createBoxes(){
 	//make a box that user puts the numbers in
 	for(var i = 0; i < 4; i++){
-		box[i] = new PIXI.Graphics();
-		box[i].beginFill(0xFFFFFF);
-		box[i].lineStyle(5, 0x000000);
-		box[i].position.x =  i * window.innerWidth/4 + (window.innerWidth/8 - 40);
-		box[i].position.y =  newAlarmPos * 100;
-		box[i].drawRect(0, 0, 75, 75);
-		stage.addChild(box[i]);
+		box[i + ((newAlarmPos - 1) * 4)] = new PIXI.Graphics();
+		box[i + ((newAlarmPos - 1) * 4)].beginFill(0xFFFFFF);
+		box[i + ((newAlarmPos - 1) * 4)].lineStyle(5, 0x000000);
+		box[i + ((newAlarmPos - 1) * 4)].position.x =  i * window.innerWidth/4 + (window.innerWidth/8 - 40);
+		box[i + ((newAlarmPos - 1) * 4)].position.y =  newAlarmPos * 100;
+		box[i + ((newAlarmPos - 1) * 4)].drawRect(0, 0, 75, 75);
+		stage.addChild(box[i + ((newAlarmPos - 1) * 4)]);
 
 		//wtf it needs console to work 
-		console.log(box[i].height);
+		console.log(box[i + ((newAlarmPos - 1) * 4)].height);
 	}
 }
 
@@ -175,59 +179,66 @@ function intersect(obj, num, pinned, reference){
 	//bounding box to determine if a number is in a box
 	
 	//currently only the 0 number works, need to make it so that they all work by changing number[i][0] to something like number[i][x]
-	 console.log("num pos x: " + obj.position.x + " num pos y: " + obj.position.y);
-	 console.log("box pos x: " + box[0].position.x + " box pos y: " + box[0].position.y);
-	 console.log("box width: " + box[0].width + "box height: " + box[0].height);
-	
-	for (var i = 0; i < 10; i++) {
-		if(obj.position.x > box[0].position.x && 
-		 obj.position.x < box[0].position.x + box[0].width &&
-		 obj.position.y > box[0].position.y &&
-		 obj.position.y < box[0].position.y + box[0].height){
-			hour[0] = num;
+	 // console.log("num pos x: " + obj.position.x + " num pos y: " + obj.position.y);
+	 // console.log("box pos x: " + box[0].position.x + " box pos y: " + box[0].position.y);
+	 // console.log("box width: " + box[0].width + "box height: " + box[0].height);
+
+	for (var i = 0; i < newAlarmPos; i++) {
+		if(obj.position.x > box[i * 4].position.x && 
+		obj.position.x < box[i * 4].position.x + box[i * 4].width &&
+		obj.position.y > box[i* 4].position.y &&
+		obj.position.y < box[i * 4].position.y + box[i * 4].height){
+			hour[i * 2] = num;
+			console.log(hour[i * 2]);
 			pinned = true;
 		}
-		 if(obj.position.x > box[1].position.x && 
-		 obj.position.x < box[1].position.x + box[1].width &&
-		 obj.position.y > box[1].position.y &&
-		 obj.position.y < box[1].position.y + box[1].height){
-			hour[1] = num;
+		 if(obj.position.x > box[1 + i * 4].position.x && 
+		 obj.position.x < box[1 + i * 4].position.x + box[1 + i * 4].width &&
+		 obj.position.y > box[1 + i * 4].position.y &&
+		 obj.position.y < box[1 + i * 4].position.y + box[1 + i * 4].height){
+			hour[i * 2 + 1] = num;
+			console.log(hour[i * 2 + 1]);
+			console.log("sdas");
 			pinned = true;
 		}
-		 if(obj.position.x > box[2].position.x && 
-		 obj.position.x < box[2].position.x + box[2].width &&
-		 obj.position.y > box[2].position.y &&
-		 obj.position.y < box[2].position.y + box[2].height){
-			minute[0] = num;
+		 if(obj.position.x > box[2 + + i * 4].position.x && 
+		 obj.position.x < box[2 + + i * 4].position.x + box[2 + + i * 4].width &&
+		 obj.position.y > box[2 + + i * 4].position.y &&
+		 obj.position.y < box[2 + + i * 4].position.y + box[2 + + i * 4].height){
+			minute[i * 2] = num;
+			console.log(minute[i * 2]);
 			pinned = true;
 		}
-		 if(obj.position.x > box[3].position.x && 
-		 obj.position.x < box[3].position.x + box[3].width &&
-		 obj.position.y > box[3].position.y &&
-		 obj.position.y < box[3].position.y + box[3].height){
-			minute[1] = num;
+		 if(obj.position.x > box[3 + + i * 4].position.x && 
+		 obj.position.x < box[3 + + i * 4].position.x + box[3 + + i * 4].width &&
+		 obj.position.y > box[3 + + i * 4].position.y &&
+		 obj.position.y < box[3 + + i * 4].position.y + box[3 + + i * 4].height){
+			minute[i * 2 + 1] = num;
+			console.log(minute[i * 2 + 1]);
 			pinned = true;
 		}
 	}
 	
 	//remove the number after 5 seconds
-	if(pinned == false){
-		 var  something = setInterval(function(){
-		 //removes the last clone
-			 stage.removeChild(clonedNumber[reference]);
-		 },5000);
-	}
+	 if(pinned == false){
+		var  something = setInterval(function(){
+		  //removes the last clone
+		stage.removeChild(clonedNumber[reference]);
+		},5000);
+	 }
 }
 
 function checkAlarm(){
-	//needs console from above to work wtf
-	//console.log(minute[1]);
-	if(hour[0] == currentHour[0] && hour[1] == currentHour[1] && minute[0] == currentMinute[0] && minute[1] == currentMinute[1]){
-		console.log("Clock set to current time, used for testing");
-		//play alarm
-		var audio = new Audio('audio/alarm.wav');
+	for (var i = 0; i < newAlarmPos; i++) {
+		if(hour[i * 2] == currentHour[0] && hour[i * 2 + 1] == currentHour[1] && minute[i * 2] == currentMinute[0] && minute[i * 2 + 1] == currentMinute[1] && playAlarm == false){
+			console.log("Clock set to current time, used for testing");
+			//play alarm
+			playAlarm = true;
+		 }
+	 }
+	 
+	 if(playAlarm == true){
 		audio.play();
-		//add some functionality to adding new alarm, deleting alarm
 	 }
 }
 
@@ -260,16 +271,11 @@ function addAlarm(){
 	newAlarmBox.mousedown = newAlarmBox.touchstart = function(data){
 		if(alarmLimit > 1){
 			alarmLimit -= 1;
-			console.log(alarmLimit);
 			this.data = data;
 			newAlarmPos += 1;
 			createBoxes();
 			newAlarmBox.clear();
 			stage.removeChild(addAlarmText) 
-			//remove and then add numbers back to front of the canvas
-			for (var i=0; i < 10; i++) {
-				stage.removeChild(number[i]);
-			}
 			addAlarm();	
 		}
 	};
