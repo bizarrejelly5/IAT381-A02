@@ -164,9 +164,9 @@ function createBoxes(){
 		box[i + ((newAlarmPos - 1) * 4)] = new PIXI.Graphics();
 		box[i + ((newAlarmPos - 1) * 4)].beginFill(0xFFFFFF);
 		box[i + ((newAlarmPos - 1) * 4)].lineStyle(5, 0x000000);
+		box[i + ((newAlarmPos - 1) * 4)].drawRect(0, 0, 75, 75);
 		box[i + ((newAlarmPos - 1) * 4)].position.x =  i * window.innerWidth/4 + (window.innerWidth/8 - 40);
 		box[i + ((newAlarmPos - 1) * 4)].position.y =  newAlarmPos * 100;
-		box[i + ((newAlarmPos - 1) * 4)].drawRect(0, 0, 75, 75);
 		stage.addChild(box[i + ((newAlarmPos - 1) * 4)]);
 
 		//wtf it needs console to work 
@@ -185,36 +185,35 @@ function intersect(obj, num, pinned, reference){
 
 	for (var i = 0; i < newAlarmPos; i++) {
 		if(obj.position.x > box[i * 4].position.x && 
-		obj.position.x < box[i * 4].position.x + box[i * 4].width &&
-		obj.position.y > box[i* 4].position.y &&
-		obj.position.y < box[i * 4].position.y + box[i * 4].height){
+		obj.position.x < box[i * 4].position.x + box[i * 4].width/2 &&
+		obj.position.y > box[i * 4].position.y - box[1 + i * 4].height/2 &&
+		obj.position.y < box[i * 4].position.y + box[1 + i * 4].height/2){
 			hour[i * 2] = num;
-			console.log(hour[i * 2]);
+			console.log("in Box 0");
 			pinned = true;
 		}
 		 if(obj.position.x > box[1 + i * 4].position.x && 
 		 obj.position.x < box[1 + i * 4].position.x + box[1 + i * 4].width &&
-		 obj.position.y > box[1 + i * 4].position.y &&
-		 obj.position.y < box[1 + i * 4].position.y + box[1 + i * 4].height){
+		 obj.position.y > box[1 + i * 4].position.y - box[1 + i * 4].height/2 &&
+		 obj.position.y < box[1 + i * 4].position.y + box[1 + i * 4].height/2){
 			hour[i * 2 + 1] = num;
-			console.log(hour[i * 2 + 1]);
-			console.log("sdas");
+			console.log("in Box 1");
 			pinned = true;
 		}
 		 if(obj.position.x > box[2 + + i * 4].position.x && 
 		 obj.position.x < box[2 + + i * 4].position.x + box[2 + + i * 4].width &&
-		 obj.position.y > box[2 + + i * 4].position.y &&
-		 obj.position.y < box[2 + + i * 4].position.y + box[2 + + i * 4].height){
+		 obj.position.y > box[2 + + i * 4].position.y - box[2 + i * 4].height/2&&
+		 obj.position.y < box[2 + + i * 4].position.y + box[2 + i * 4].height/2){
 			minute[i * 2] = num;
-			console.log(minute[i * 2]);
+			console.log("in Box 2");
 			pinned = true;
 		}
 		 if(obj.position.x > box[3 + + i * 4].position.x && 
 		 obj.position.x < box[3 + + i * 4].position.x + box[3 + + i * 4].width &&
-		 obj.position.y > box[3 + + i * 4].position.y &&
-		 obj.position.y < box[3 + + i * 4].position.y + box[3 + + i * 4].height){
+		 obj.position.y > box[3 + + i * 4].position.y - box[3 + i * 4].height/2 &&
+		 obj.position.y < box[3 + + i * 4].position.y + box[3 + + i * 4].height/2){
 			minute[i * 2 + 1] = num;
-			console.log(minute[i * 2 + 1]);
+			console.log("in Box 3");
 			pinned = true;
 		}
 	}
@@ -251,14 +250,14 @@ function animate() {
 function addAlarm(){
 	//alarm text
 	var addAlarmText = new PIXI.Text("Add Alarm", {font:"50px Arial", fill:"red"});
-	addAlarmText.position.x = window.innerWidth/2 - 75;
+	addAlarmText.position.x = window.innerWidth/2 - addAlarmText.width/2;
 	addAlarmText.position.y = newAlarmPos * 100 + 100;
 	
 	//alarm box
 	newAlarmBox = new PIXI.Graphics();
 	newAlarmBox.beginFill(0xFFFFFF);
 	newAlarmBox.lineStyle(5, 0x000000);
-	newAlarmBox.position.x = window.innerWidth/2 - 75;
+	newAlarmBox.position.x = window.innerWidth/2 - addAlarmText.width/2;
 	newAlarmBox.position.y = newAlarmPos * 100 + 100;
 	newAlarmBox.drawRect(0, 0, addAlarmText.width, addAlarmText.height);
 	
