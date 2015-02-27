@@ -42,6 +42,8 @@ var deleteReference = 0;
 //set the timer
 var text = new PIXI.Text(currentHour + " : " + currentMinute, {font:"50px Arial", fill:"red"});
 
+var pinnedNumber = [];
+
 function init(){
 	for(var i = 0; i < 10; i++){
 		createNumbers(i);
@@ -107,18 +109,17 @@ function duplicateNumber(x){
 	clonedNumber[clonedNumber.length-1].buttonMode = true;
 	
 	//variable to determine if the number is pinned to the alarm, if not, they will be removed after 5 seconds
-	var pinnedNumber = false;
+	//var pinnedNumber = false;
+	pinnedNumber[reference] = false;
 	
 	// make it a bit bigger, so its easier to touch
 	clonedNumber[reference].scale.x = clonedNumber[reference].scale.y = screen.width/10000;
-	 clonedNumber[reference].position.x = x * window.innerWidth/10 + 50
 	 
 	//center anchor
 	clonedNumber[reference].anchor.x = 0.5;
 	clonedNumber[reference].anchor.y = 0.5;
 	
-	// clonedNumber[reference].position.y = window.innerHeight - 100;
-	clonedNumber[reference].position.x = Math.floor( Math.random() * window.innerWidth);
+	clonedNumber[reference].position.x = Math.floor( Math.random() * (window.innerWidth - 0));
 	clonedNumber[reference].position.y = Math.floor( Math.random() * (window.innerHeight - (window.innerHeight+100)) + window.innerHeight-100);
 	
 	clonedNumber[reference].mousedown = clonedNumber[reference].touchstart = function(data)
@@ -134,7 +135,7 @@ function duplicateNumber(x){
 			this.dragging = false;
 			// set the interaction data to null
 			this.data = null;
-			intersect(clonedNumber[reference], x, pinnedNumber, reference);
+			intersect(clonedNumber[reference], x, reference);
 		};
 		clonedNumber[reference].mousemove = clonedNumber[reference].touchmove = function(data)
 		{
@@ -149,7 +150,7 @@ function duplicateNumber(x){
 		stage.addChild(clonedNumber[reference]);
 		
 		//rotate number
-		rotateNumbers(clonedNumber[reference]);
+		moveNumbers(clonedNumber[reference], reference);
 }
 
 function createBoxes(){
@@ -160,7 +161,7 @@ function createBoxes(){
 		box[i + ((newAlarmPos - 1) * 4)].lineStyle(5, 0x000000);
 		box[i + ((newAlarmPos - 1) * 4)].drawRect(0, 0, 75, 75);
 		box[i + ((newAlarmPos - 1) * 4)].position.x =  i * window.innerWidth/4 + (window.innerWidth/8 - 40);
-		box[i + ((newAlarmPos - 1) * 4)].position.y =  newAlarmPos * 100;
+		box[i + ((newAlarmPos - 1) * 4)].position.y =  newAlarmPos * window.innerWidth/15;
 		stage.addChild(box[i + ((newAlarmPos - 1) * 4)]);
 
 		//wtf it needs console to work 
@@ -169,7 +170,7 @@ function createBoxes(){
 }
 
 
-function intersect(obj, num, pinned, reference){
+function intersect(obj, num, reference){
 	//bounding box to determine if a number is in a box
 	
 	//currently only the 0 number works, need to make it so that they all work by changing number[i][0] to something like number[i][x]
@@ -184,41 +185,40 @@ function intersect(obj, num, pinned, reference){
 		obj.position.y < box[i * 4].position.y + box[1 + i * 4].height/2){
 			hour[i * 2] = num;
 			console.log("in Box 0");
-			pinned = true;
+			pinnedNumber[reference] = true;
 		}
-		 if(obj.position.x > box[1 + i * 4].position.x && 
+		if(obj.position.x > box[1 + i * 4].position.x && 
 		 obj.position.x < box[1 + i * 4].position.x + box[1 + i * 4].width &&
 		 obj.position.y > box[1 + i * 4].position.y - box[1 + i * 4].height/2 &&
 		 obj.position.y < box[1 + i * 4].position.y + box[1 + i * 4].height/2){
 			hour[i * 2 + 1] = num;
 			console.log("in Box 1");
-			pinned = true;
+			pinnedNumber[reference] = true;
 		}
-		 if(obj.position.x > box[2 + + i * 4].position.x && 
+		if(obj.position.x > box[2 + + i * 4].position.x && 
 		 obj.position.x < box[2 + + i * 4].position.x + box[2 + + i * 4].width &&
 		 obj.position.y > box[2 + + i * 4].position.y - box[2 + i * 4].height/2&&
 		 obj.position.y < box[2 + + i * 4].position.y + box[2 + i * 4].height/2){
 			minute[i * 2] = num;
 			console.log("in Box 2");
-			pinned = true;
+			pinnedNumber[reference] = true;
 		}
-		 if(obj.position.x > box[3 + + i * 4].position.x && 
+		if(obj.position.x > box[3 + + i * 4].position.x && 
 		 obj.position.x < box[3 + + i * 4].position.x + box[3 + + i * 4].width &&
 		 obj.position.y > box[3 + + i * 4].position.y - box[3 + i * 4].height/2 &&
 		 obj.position.y < box[3 + + i * 4].position.y + box[3 + + i * 4].height/2){
 			minute[i * 2 + 1] = num;
 			console.log("in Box 3");
-			pinned = true;
+			pinnedNumber[reference] = true;
 		}
 	}
-	
 	//remove the number after 5 seconds
-	if(pinned == false){
-		var something = setInterval(function(){
+	var something = setInterval(function(){
+		if(pinnedNumber[reference] == false){
 			//removes the last clone
 			stage.removeChild(clonedNumber[reference]);
-		},5000);
-	}
+		}
+	},5000);
 }
 
 function checkAlarm(){
@@ -276,18 +276,42 @@ function stopAlarmButton(){
 
 }
 
-function rotateNumbers(x){
-	//rotate the numbers
-	var direction = -0.1;
-	var rotateVar = setInterval(function(){
-		if(x.rotation > 0.5){
-			direction *= -1;
-		}
-		if(x.rotation < -0.5){
-			direction *= -1;
-		}
-		x.rotation += direction;
-	},100);
+//AMY CHANGE THESE VALUES USING THE PHONE GYRO, MAINLY 'DIRECTION' AND velX AND velY
+function moveNumbers(x, reference){
+		//rotate the numbers
+		var direction = -0.1;
+		var rotateVar = setInterval(function(){
+			if(pinnedNumber[reference] == false){
+				if(x.rotation > 0.5){
+					direction *= -1;
+				}
+				if(x.rotation < -0.5){
+					direction *= -1;
+				}
+				x.rotation += direction;
+			}
+		},100);
+
+		//move position
+		var velX = Math.random() * (5 - 1 + 1);
+		var velY = Math.random() * (5 - 1 + 1);
+		var plusOrMinus = Math.random() < 0.5 ? -1 : 1; //randomize velocity direction
+	
+		var velVar = setInterval(function(){
+			if(pinnedNumber[reference] == false){
+				x.position.x += velX * plusOrMinus;
+				x.position.y += velY* plusOrMinus;
+				//reverse direction if it hits an area
+				if(x.position.x > window.innerWidth || x.position.x < 0){
+					velX *= -1;
+					console.log("hit");
+				}
+				// if(x.position.y > window.innerHeight || x.position.y < window.innerHeight - 200){
+					// velY *= -1;
+					// console.log("hit");
+				// }
+			}
+		},100);
 }
 
 function animate() {
