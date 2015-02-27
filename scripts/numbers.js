@@ -34,6 +34,7 @@ var alarmLimit = 3;
 //alarm audio file
 var playAlarm = false;
 var audio = new Audio('audio/alarm.wav');
+var stopAlarm = false;
 
 //tracks which number is deleted after 5 seconds
 var deleteReference = 0;
@@ -105,17 +106,21 @@ function duplicateNumber(x){
 	clonedNumber[clonedNumber.length-1].interactive = true;
 	clonedNumber[clonedNumber.length-1].buttonMode = true;
 	
-	//delete the array with this position
-	
-	
-	//variable to determine if the number is pinned to the alarm, if not, they will be destroyed after 5 seconds
+	//variable to determine if the number is pinned to the alarm, if not, they will be removed after 5 seconds
 	var pinnedNumber = false;
 	
 	// make it a bit bigger, so its easier to touch
 	clonedNumber[reference].scale.x = clonedNumber[reference].scale.y = screen.width/10000;
-	clonedNumber[reference].position.x = x * window.innerWidth/10 + 50
-	clonedNumber[reference].position.y = window.innerHeight - 100;
-		
+	 clonedNumber[reference].position.x = x * window.innerWidth/10 + 50
+	 
+	//center anchor
+	clonedNumber[reference].anchor.x = 0.5;
+	clonedNumber[reference].anchor.y = 0.5;
+	
+	// clonedNumber[reference].position.y = window.innerHeight - 100;
+	clonedNumber[reference].position.x = Math.floor( Math.random() * window.innerWidth);
+	clonedNumber[reference].position.y = Math.floor( Math.random() * (window.innerHeight - (window.innerHeight+100)) + window.innerHeight-100);
+	
 	clonedNumber[reference].mousedown = clonedNumber[reference].touchstart = function(data)
 		{
 			this.data = data;
@@ -143,19 +148,8 @@ function duplicateNumber(x){
 		}
 		stage.addChild(clonedNumber[reference]);
 		
-
-		
-}
-
-function pin(x){
-	if(x == false){
-		console.log("pinned");
-		return x = true;
-	}
-	else{
-		return x = false;
-	}
-	
+		//rotate number
+		rotateNumbers(clonedNumber[reference]);
 }
 
 function createBoxes(){
@@ -219,32 +213,30 @@ function intersect(obj, num, pinned, reference){
 	}
 	
 	//remove the number after 5 seconds
-	 if(pinned == false){
-		var  something = setInterval(function(){
-		  //removes the last clone
-		stage.removeChild(clonedNumber[reference]);
+	if(pinned == false){
+		var something = setInterval(function(){
+			//removes the last clone
+			stage.removeChild(clonedNumber[reference]);
 		},5000);
-	 }
+	}
 }
 
 function checkAlarm(){
 	for (var i = 0; i < newAlarmPos; i++) {
-		if(hour[i * 2] == currentHour[0] && hour[i * 2 + 1] == currentHour[1] && minute[i * 2] == currentMinute[0] && minute[i * 2 + 1] == currentMinute[1] && playAlarm == false){
+		if(hour[i * 2] == currentHour[0] && hour[i * 2 + 1] == currentHour[1] && minute[i * 2] == currentMinute[0] && minute[i * 2 + 1] == currentMinute[1] && playAlarm == false && stopAlarm == false){
 			console.log("Clock set to current time, used for testing");
 			//play alarm
 			playAlarm = true;
 		 }
 	 }
 	 
-	 if(playAlarm == true){
+	 if(playAlarm == true && stopAlarm == false){
 		audio.play();
 	 }
-}
-
-
-function animate() {
-	requestAnimFrame( animate );
-	renderer.render(stage);
+	 else{
+		playAlarm = false;
+		audio.pause();
+	 }
 }
 
 function addAlarm(){
@@ -280,6 +272,28 @@ function addAlarm(){
 	};
 }
 
+function stopAlarmButton(){
+
+}
+
+function rotateNumbers(x){
+	//rotate the numbers
+	var direction = -0.1;
+	var rotateVar = setInterval(function(){
+		if(x.rotation > 0.5){
+			direction *= -1;
+		}
+		if(x.rotation < -0.5){
+			direction *= -1;
+		}
+		x.rotation += direction;
+	},100);
+}
+
+function animate() {
+	requestAnimFrame( animate );
+	renderer.render(stage);
+}
 
 //update timer every one second
 var myVar=setInterval(function(){
@@ -289,4 +303,6 @@ addAlarm();
 createBoxes();
 createNumbers();
 init();
+animate();
+
 
