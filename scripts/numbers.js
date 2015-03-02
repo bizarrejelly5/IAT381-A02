@@ -85,7 +85,7 @@ function createNumbers(i)
 		number[i].anchor.x = 0.5;
 		number[i].anchor.y = 0.5;
 		// make it a bit bigger, so its easier to touch
-		number[i].scale.x = number[i].scale.y = screen.width/10;
+		number[i].scale.x = number[i].scale.y = screen.width/5000;
 		number[i].mousedown = number[i].touchstart = function(data)
 		{
 			duplicateNumber(i);
@@ -113,7 +113,7 @@ function duplicateNumber(x){
 	pinnedNumber[reference] = false;
 	
 	// make it a bit bigger, so its easier to touch
-	clonedNumber[reference].scale.x = clonedNumber[reference].scale.y = screen.width/10;
+	clonedNumber[reference].scale.x = clonedNumber[reference].scale.y = screen.width/5000;
 	 
 	//center anchor
 	clonedNumber[reference].anchor.x = 0.5;
@@ -161,7 +161,7 @@ function createBoxes(){
 		box[i + ((newAlarmPos - 1) * 4)].lineStyle(5, 0x000000);
 		box[i + ((newAlarmPos - 1) * 4)].drawRect(0, 0, 75, 75);
 		box[i + ((newAlarmPos - 1) * 4)].position.x =  i * window.innerWidth/4 + (window.innerWidth/8 - 40);
-		box[i + ((newAlarmPos - 1) * 4)].position.y =  newAlarmPos * window.innerWidth/15;
+		box[i + ((newAlarmPos - 1) * 4)].position.y =  (newAlarmPos - 1) * window.innerHeight/5 + 100;
 		stage.addChild(box[i + ((newAlarmPos - 1) * 4)]);
 
 		//wtf it needs console to work 
@@ -243,14 +243,14 @@ function addAlarm(){
 	//alarm text
 	var addAlarmText = new PIXI.Text("Add Alarm", {font:"50px Arial", fill:"red"});
 	addAlarmText.position.x = window.innerWidth/2 - addAlarmText.width/2;
-	addAlarmText.position.y = newAlarmPos * 100 + 100;
+	addAlarmText.position.y = newAlarmPos * window.innerHeight/5 + 100;
 	
 	//alarm box
 	newAlarmBox = new PIXI.Graphics();
 	newAlarmBox.beginFill(0xFFFFFF);
 	newAlarmBox.lineStyle(5, 0x000000);
 	newAlarmBox.position.x = window.innerWidth/2 - addAlarmText.width/2;
-	newAlarmBox.position.y = newAlarmPos * 100 + 100;
+	newAlarmBox.position.y = newAlarmPos * window.innerHeight/5 + 100;
 	newAlarmBox.drawRect(0, 0, addAlarmText.width, addAlarmText.height);
 	
 	stage.addChild(newAlarmBox);
