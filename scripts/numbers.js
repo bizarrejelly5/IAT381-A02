@@ -35,6 +35,7 @@ var alarmLimit = 3;
 var playAlarm = false;
 var audio = new Audio('audio/alarm.wav');
 var stopAlarm = false;
+audio.play();
 
 //tracks which number is deleted after 5 seconds
 var deleteReference = 0;
@@ -235,7 +236,7 @@ function checkAlarm(){
 	 }
 	 else{
 		playAlarm = false;
-		audio.pause();
+		// audio.pause();
 	 }
 }
 
@@ -243,14 +244,14 @@ function addAlarm(){
 	//alarm text
 	var addAlarmText = new PIXI.Text("Add Alarm", {font:"50px Arial", fill:"red"});
 	addAlarmText.position.x = window.innerWidth/2 - addAlarmText.width/2;
-	addAlarmText.position.y = newAlarmPos * window.innerHeight/5 + 100;
+	addAlarmText.position.y = newAlarmPos * window.innerHeight/10 + 100;
 	
 	//alarm box
 	newAlarmBox = new PIXI.Graphics();
 	newAlarmBox.beginFill(0xFFFFFF);
 	newAlarmBox.lineStyle(5, 0x000000);
 	newAlarmBox.position.x = window.innerWidth/2 - addAlarmText.width/2;
-	newAlarmBox.position.y = newAlarmPos * window.innerHeight/5 + 100;
+	newAlarmBox.position.y = newAlarmPos * window.innerHeight/10 + 100;
 	newAlarmBox.drawRect(0, 0, addAlarmText.width, addAlarmText.height);
 	
 	stage.addChild(newAlarmBox);
