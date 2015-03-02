@@ -85,7 +85,7 @@ function createNumbers(i)
 		number[i].anchor.x = 0.5;
 		number[i].anchor.y = 0.5;
 		// make it a bit bigger, so its easier to touch
-		number[i].scale.x = number[i].scale.y = screen.width/5000;
+		number[i].scale.x = number[i].scale.y = screen.width/100;
 		number[i].mousedown = number[i].touchstart = function(data)
 		{
 			duplicateNumber(i);
