@@ -45,6 +45,7 @@ var text = new PIXI.Text(currentHour + " : " + currentMinute, {font:"50px Arial"
 var pinnedNumber = [];
 
 function init(){
+	var yPos = 1;
 	for(var i = 0; i < 10; i++){
 		createNumbers(i);
 		number[i] = [];
@@ -84,8 +85,7 @@ function createNumbers(i)
 		number[i].anchor.x = 0.5;
 		number[i].anchor.y = 0.5;
 		// make it a bit bigger, so its easier to touch
-		number[i].scale.x = number[i].scale.y = screen.width/10000;
-
+		number[i].scale.x = number[i].scale.y = screen.width/5000;
 		number[i].mousedown = number[i].touchstart = function(data)
 		{
 			duplicateNumber(i);
