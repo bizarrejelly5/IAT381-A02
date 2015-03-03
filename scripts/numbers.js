@@ -3,13 +3,14 @@ show the number[i]s at the bottom of the screen. The number[i]s can be dragged a
 */
 
 var stage = new PIXI.Stage(0xFFF000, true);
+var renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight, null);
+
+//fridge background 
 var background = PIXI.Texture.fromImage("images/fridges.png");
 var fridge = new PIXI.Sprite(background);
-fridge.width = screen.width;
-fridge.height = screen.height;
+fridge.width = window.innerWidth;
+fridge.height = window.innerHeight;
 stage.addChild(fridge);
-
-var renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight, null);
 
 // add the renderer view element to the DOM
 document.body.appendChild(renderer.view);
