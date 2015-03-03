@@ -127,7 +127,7 @@ function duplicateNumber(x){
 	pinnedNumber[reference] = false;
 	
 	// make it a bit bigger, so its easier to touch
-	clonedNumber[reference].scale.x = clonedNumber[clonedNumber.length-1].scale.y = screen.width/5000;
+	clonedNumber[reference].scale.x = clonedNumber[clonedNumber.length-1].scale.y = screen.width/1000;
 	 
 	//center anchor
 	clonedNumber[reference].anchor.x = 0.5;
@@ -136,7 +136,12 @@ function duplicateNumber(x){
 	//clonedNumber[reference].position.x = Math.floor( Math.random() * (window.innerWidth - 0));
 	//clonedNumber[reference].position.y = Math.floor( Math.random() * (window.innerHeight - (window.innerHeight+100)) + window.innerHeight-100);
 	clonedNumber[reference].position.x = x * window.innerWidth/10 + 50;
-	clonedNumber[reference].position.y = window.innerHeight - 100;
+	if(x < 5){
+		clonedNumber[reference].position.y = window.innerHeight - 200;
+	}
+	else{
+		clonedNumber[reference].position.y = window.innerHeight - 100;
+	}
 	
 	clonedNumber[clonedNumber.length-1].mousedown = clonedNumber[clonedNumber.length-1].touchstart = function(data)
 		{
