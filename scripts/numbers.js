@@ -5,13 +5,6 @@ show the number[i]s at the bottom of the screen. The number[i]s can be dragged a
 var stage = new PIXI.Stage(0xFFF000, true);
 var renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight, null);
 
-//fridge background 
-var background = PIXI.Texture.fromImage("images/fridges.png");
-var fridge = new PIXI.Sprite(background);
-fridge.width = window.innerWidth;
-fridge.height = window.innerHeight;
-stage.addChild(fridge);
-
 // add the renderer view element to the DOM
 document.body.appendChild(renderer.view);
 //seems to make it take up the entire screen
@@ -20,6 +13,14 @@ renderer.view.style.top = "0px";
 renderer.view.style.left = "0px";
 
 requestAnimFrame( animate );
+
+
+//fridge background 
+var background = PIXI.Texture.fromImage("images/fridges.png");
+var fridge = new PIXI.Sprite(background);
+fridge.width = window.innerWidth;
+fridge.height = window.innerHeight;
+stage.addChild(fridge);
 
 //the sprites, number[i]s and hour/minute boxes
 var number = [];
