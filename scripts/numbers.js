@@ -33,9 +33,9 @@ var alarmLimit = 3;
 
 //alarm audio file
 var playAlarm = false;
-var audio = new Audio('audio/alarm.wav');
+var audio = new Audio('audio/alarm.mp3');
 var stopAlarm = false;
-audio.play();
+//audio.play();
 
 //tracks which number is deleted after 5 seconds
 var deleteReference = 0;
@@ -48,7 +48,9 @@ var pinnedNumber = [];
 function init(){
 	var yPos = 1;
 	for(var i = 0; i < 10; i++){
-		createNumbers(i);
+		//createNumbers(i);
+		duplicateNumber(i);
+		deleteReference++;
 		number[i] = [];
 	}
 }
@@ -103,9 +105,10 @@ function createNumbers(i)
 
 function duplicateNumber(x){
 	var reference = deleteReference;
+			console.log(clonedNumber.length);
 	var texture = PIXI.Texture.fromImage("images/" + x + ".png");
 	clonedNumber[clonedNumber.length] = new PIXI.Sprite(texture);
-
+console.log(clonedNumber.length);
 	clonedNumber[clonedNumber.length-1].interactive = true;
 	clonedNumber[clonedNumber.length-1].buttonMode = true;
 	
@@ -114,16 +117,18 @@ function duplicateNumber(x){
 	pinnedNumber[reference] = false;
 	
 	// make it a bit bigger, so its easier to touch
-	clonedNumber[reference].scale.x = clonedNumber[reference].scale.y = screen.width/5000;
+	clonedNumber[reference].scale.x = clonedNumber[clonedNumber.length-1].scale.y = screen.width/5000;
 	 
 	//center anchor
 	clonedNumber[reference].anchor.x = 0.5;
 	clonedNumber[reference].anchor.y = 0.5;
 	
-	clonedNumber[reference].position.x = Math.floor( Math.random() * (window.innerWidth - 0));
-	clonedNumber[reference].position.y = Math.floor( Math.random() * (window.innerHeight - (window.innerHeight+100)) + window.innerHeight-100);
+	//clonedNumber[reference].position.x = Math.floor( Math.random() * (window.innerWidth - 0));
+	//clonedNumber[reference].position.y = Math.floor( Math.random() * (window.innerHeight - (window.innerHeight+100)) + window.innerHeight-100);
+	clonedNumber[reference].position.x = x * window.innerWidth/10 + 50;
+	clonedNumber[reference].position.y = window.innerHeight - 100;
 	
-	clonedNumber[reference].mousedown = clonedNumber[reference].touchstart = function(data)
+	clonedNumber[clonedNumber.length-1].mousedown = clonedNumber[clonedNumber.length-1].touchstart = function(data)
 		{
 			this.data = data;
 			this.alpha = 0.9;
@@ -151,7 +156,7 @@ function duplicateNumber(x){
 		stage.addChild(clonedNumber[reference]);
 		
 		//rotate number
-		moveNumbers(clonedNumber[reference], reference);
+		//moveNumbers(clonedNumber[reference], reference);
 }
 
 function createBoxes(){
@@ -160,7 +165,7 @@ function createBoxes(){
 		box[i + ((newAlarmPos - 1) * 4)] = new PIXI.Graphics();
 		box[i + ((newAlarmPos - 1) * 4)].beginFill(0xFFFFFF);
 		box[i + ((newAlarmPos - 1) * 4)].lineStyle(5, 0x000000);
-		box[i + ((newAlarmPos - 1) * 4)].drawRect(0, 0, 75, 75);
+		box[i + ((newAlarmPos - 1) * 4)].drawRect(0, 0, window.innerWidth/10, window.innerWidth/10);
 		box[i + ((newAlarmPos - 1) * 4)].position.x =  i * window.innerWidth/4 + (window.innerWidth/8 - 40);
 		box[i + ((newAlarmPos - 1) * 4)].position.y =  (newAlarmPos - 1) * window.innerHeight/5 + 100;
 		stage.addChild(box[i + ((newAlarmPos - 1) * 4)]);
@@ -187,42 +192,56 @@ function intersect(obj, num, reference){
 			hour[i * 2] = num;
 			console.log("in Box 0");
 			pinnedNumber[reference] = true;
+			duplicateNumber(reference);
+			deleteReference++;
 		}
-		if(obj.position.x > box[1 + i * 4].position.x && 
+		else if(obj.position.x > box[1 + i * 4].position.x && 
 		 obj.position.x < box[1 + i * 4].position.x + box[1 + i * 4].width &&
 		 obj.position.y > box[1 + i * 4].position.y - box[1 + i * 4].height/2 &&
 		 obj.position.y < box[1 + i * 4].position.y + box[1 + i * 4].height/2){
 			hour[i * 2 + 1] = num;
 			console.log("in Box 1");
 			pinnedNumber[reference] = true;
+			duplicateNumber(reference);
+			deleteReference++;
 		}
-		if(obj.position.x > box[2 + + i * 4].position.x && 
-		 obj.position.x < box[2 + + i * 4].position.x + box[2 + + i * 4].width &&
+		else if(obj.position.x > box[2 + + i * 4].position.x && 
+		 obj.position.x < box[2 + + i * 4].position.x + box[2 + i * 4].width &&
 		 obj.position.y > box[2 + + i * 4].position.y - box[2 + i * 4].height/2&&
 		 obj.position.y < box[2 + + i * 4].position.y + box[2 + i * 4].height/2){
 			minute[i * 2] = num;
 			console.log("in Box 2");
 			pinnedNumber[reference] = true;
+			duplicateNumber(reference);
+			deleteReference++;
 		}
-		if(obj.position.x > box[3 + + i * 4].position.x && 
-		 obj.position.x < box[3 + + i * 4].position.x + box[3 + + i * 4].width &&
+		else if(obj.position.x > box[3 + + i * 4].position.x && 
+		 obj.position.x < box[3 + + i * 4].position.x + box[3 + i * 4].width &&
 		 obj.position.y > box[3 + + i * 4].position.y - box[3 + i * 4].height/2 &&
-		 obj.position.y < box[3 + + i * 4].position.y + box[3 + + i * 4].height/2){
+		 obj.position.y < box[3 + + i * 4].position.y + box[3 + i * 4].height/2){
 			minute[i * 2 + 1] = num;
 			console.log("in Box 3");
 			pinnedNumber[reference] = true;
+			duplicateNumber(reference);
+			deleteReference++;
 		}
 	}
+	
 	//remove the number after 5 seconds
 	var something = setInterval(function(){
 		if(pinnedNumber[reference] == false){
-			//removes the last clone
-			stage.removeChild(clonedNumber[reference]);
+			clonedNumber[reference].position.x = num * window.innerWidth/10 + 50
+			clonedNumber[reference].position.y = window.innerHeight - 100;
 		}
 	},5000);
 }
 
 function checkAlarm(){
+		var texture = PIXI.Texture.fromImage("images/" + 1 + ".png");
+		var test = new PIXI.Sprite(texture);
+		test.interactive = true;
+		test.buttonMode = true;
+		
 	for (var i = 0; i < newAlarmPos; i++) {
 		if(hour[i * 2] == currentHour[0] && hour[i * 2 + 1] == currentHour[1] && minute[i * 2] == currentMinute[0] && minute[i * 2 + 1] == currentMinute[1] && playAlarm == false && stopAlarm == false){
 			console.log("Clock set to current time, used for testing");
@@ -231,12 +250,20 @@ function checkAlarm(){
 		 }
 	 }
 	 
+	 	test.mousedown = test.touchstart = function(data)
+		{
+			this.data = data;
+			this.alpha = 0.9;
+			stopAlarm = true;
+		}
+		
 	 if(playAlarm == true && stopAlarm == false){
 		audio.play();
+		stage.addChild(test);
 	 }
-	 else{
+	  else if(playAlarm == true && stopAlarm == true){
 		playAlarm = false;
-		// audio.pause();
+		 audio.pause();
 	 }
 }
 
@@ -244,14 +271,14 @@ function addAlarm(){
 	//alarm text
 	var addAlarmText = new PIXI.Text("Add Alarm", {font:"50px Arial", fill:"red"});
 	addAlarmText.position.x = window.innerWidth/2 - addAlarmText.width/2;
-	addAlarmText.position.y = newAlarmPos * window.innerHeight/10 + 100;
+	addAlarmText.position.y = (newAlarmPos - 1) * window.innerHeight/5 + 300;
 	
 	//alarm box
 	newAlarmBox = new PIXI.Graphics();
 	newAlarmBox.beginFill(0xFFFFFF);
 	newAlarmBox.lineStyle(5, 0x000000);
 	newAlarmBox.position.x = window.innerWidth/2 - addAlarmText.width/2;
-	newAlarmBox.position.y = newAlarmPos * window.innerHeight/10 + 100;
+	newAlarmBox.position.y = (newAlarmPos - 1) * window.innerHeight/5 + 300;
 	newAlarmBox.drawRect(0, 0, addAlarmText.width, addAlarmText.height);
 	
 	stage.addChild(newAlarmBox);
@@ -274,8 +301,9 @@ function addAlarm(){
 }
 
 function stopAlarmButton(){
-
+	
 }
+
 
 //AMY CHANGE THESE VALUES USING THE PHONE GYRO, MAINLY 'DIRECTION' AND velX AND velY
 function moveNumbers(x, reference){
