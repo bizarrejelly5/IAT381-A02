@@ -35,14 +35,15 @@ var currentHour = [];
 var currentMinute = [];
 var newAlarmPos = 1;
 var onOff, onOff2 = false;
-
+var addButton;
+var deleteButton;
 
 //only allow up to 3 alarms
 var alarmLimit = 3;
 
 //alarm audio file
 var playAlarm = false;
-var audio = new Audio('audio/alarm.mp3');
+var audio = new Sound('audio/alarm.mp3');
 var stopAlarm = false;
 //audio.play();
 
@@ -116,7 +117,6 @@ function createNumbers(i)
 
 function duplicateNumber(x){
 	var reference = deleteReference;
-			console.log(clonedNumber.length);
 	var texture = PIXI.Texture.fromImage("images/" + x + ".png");
 	
 	clonedNumber[clonedNumber.length] = new PIXI.Sprite(texture);
@@ -181,8 +181,10 @@ function createBoxes(){
 	//make a box that user puts the numbers in
 	var colons = PIXI.Texture.fromImage("images/colon.png");
 	colon[newAlarmPos-1] = new PIXI.Sprite(colons);
+	//colon[newAlarmPos-1].position.x = screen.width/2;
+	colon[newAlarmPos-1].anchor.x = colon[newAlarmPos-1].anchor.y = 0.5
 	colon[newAlarmPos-1].position.x = screen.width/2;
-	colon[newAlarmPos-1].position.y = (newAlarmPos - 1) * window.innerHeight/5;
+	colon[newAlarmPos-1].position.y = (newAlarmPos - 1) * window.innerHeight/5 + 200;
 	colon[newAlarmPos-1].scale.x = colon[newAlarmPos-1].scale.y = screen.width/2000;
 	stage.addChild(colon[newAlarmPos-1]);
 	
@@ -191,7 +193,7 @@ function createBoxes(){
 		box[i + ((newAlarmPos - 1) * 4)].beginFill(0xFFFFFF);
 		box[i + ((newAlarmPos - 1) * 4)].lineStyle(5, 0x000000);
 		box[i + ((newAlarmPos - 1) * 4)].drawRect(0, 0, window.innerWidth/5, window.innerWidth/5);
-		box[i + ((newAlarmPos - 1) * 4)].position.x =  i * window.innerWidth/4 + (window.innerWidth/8 - 40);
+		box[i + ((newAlarmPos - 1) * 4)].position.x =  i * window.innerWidth/4 + (window.innerWidth/8 - 80);
 		box[i + ((newAlarmPos - 1) * 4)].position.y =  (newAlarmPos - 1) * window.innerHeight/5 + 100;
 		stage.addChild(box[i + ((newAlarmPos - 1) * 4)]);
 
@@ -305,39 +307,26 @@ function checkAlarm(){
 
 function addAlarm(){
 	//alarm text
-	var addAlarmText = new PIXI.Text("Add Alarm", {font:"50px Arial", fill:"red"});
-	addAlarmText.position.x = window.innerWidth/2 - addAlarmText.width/2;
-	addAlarmText.position.y = (newAlarmPos - 1) * window.innerHeight/5 + 300;
-	
-	//alarm box
-	newAlarmBox = new PIXI.Graphics();
-	newAlarmBox.beginFill(0xFFFFFF);
-	newAlarmBox.lineStyle(5, 0x000000);
-	newAlarmBox.position.x = window.innerWidth/2 - addAlarmText.width/2;
-	newAlarmBox.position.y = (newAlarmPos - 1) * window.innerHeight/5 + 300;
-	newAlarmBox.drawRect(0, 0, addAlarmText.width, addAlarmText.height);
-	
-	stage.addChild(newAlarmBox);
-	stage.addChild(addAlarmText);
-	
-	//make the box interactive
-	newAlarmBox.interactive = true;
-	newAlarmBox.buttonMode = true;
-	newAlarmBox.mousedown = newAlarmBox.touchstart = function(data){
+	var texture = PIXI.Texture.fromImage("images/add.jpg");
+	addButton = new PIXI.Sprite(texture);
+	addButton.interactive = true;
+	addButton.buttonMode = true;
+	addButton.anchor.x = 0.5;
+	addButton.position.x = window.innerWidth/2 - 100;
+	addButton.position.y = (newAlarmPos - 1) * window.innerHeight/5 + 300;
+	stage.addChild(addButton);
+
+	addButton.mousedown = addButton.touchstart = function(data){
 		if(alarmLimit > 1){
 			alarmLimit -= 1;
 			this.data = data;
 			newAlarmPos += 1;
 			createBoxes();
-			newAlarmBox.clear();
-			stage.removeChild(addAlarmText) 
 			addAlarm();	
+			
+			deleteButton.position.y = (newAlarmPos - 1) * window.innerHeight/5 + 300;
 		}
 	};
-}
-
-function stopAlarmButton(){
-	
 }
 
 
@@ -384,9 +373,32 @@ function animate() {
 	renderer.render(stage);
 }
 
-function testing(){
-
+function deleteAlarm(){
+	var texture = PIXI.Texture.fromImage("images/delete.jpg");
+	deleteButton = new PIXI.Sprite(texture);
+	deleteButton.anchor.x = 0.5;
+	deleteButton.position.x = window.innerWidth/2 + 100;
+	deleteButton.position.y = (newAlarmPos - 1) * window.innerHeight/5 + 300;
+	//deleteButton.anchor.x = deleteButton.anchor.y = 0.5;
+	
+	deleteButton.interactive = true;
+	deleteButton.buttonMode = true;
+	
+	stage.addChild(deleteButton);
+	
+	deleteButton.mousedown = deleteButton.touchstart = function(data){
+	console.log(alarmLimit);
+		if(alarmLimit < 3){
+			for(var i = 0; i < 4; i++){
+				stage.removeChild(box[i + ((newAlarmPos - 1) * 4)]);
+			}
+			alarmLimit += 1;
+			newAlarmPos -= 1;
+			deleteButton.position.y = (newAlarmPos - 1) * window.innerHeight/5 + 300;
+		}
+	};
 }
+
 //update timer every one second
 var myVar=setInterval(function(){
 		timer(), checkAlarm();
@@ -396,5 +408,4 @@ createBoxes();
 createNumbers();
 init();
 animate();
-testing();
-
+deleteAlarm();
