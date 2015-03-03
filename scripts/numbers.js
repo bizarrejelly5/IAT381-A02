@@ -135,12 +135,14 @@ function duplicateNumber(x){
 	
 	//clonedNumber[reference].position.x = Math.floor( Math.random() * (window.innerWidth - 0));
 	//clonedNumber[reference].position.y = Math.floor( Math.random() * (window.innerHeight - (window.innerHeight+100)) + window.innerHeight-100);
-	clonedNumber[reference].position.x = x * window.innerWidth/10 + 50;
+	
 	if(x < 5){
 		clonedNumber[reference].position.y = window.innerHeight - 200;
+		clonedNumber[reference].position.x = x * window.innerWidth/5 + 50;
 	}
 	else{
 		clonedNumber[reference].position.y = window.innerHeight - 100;
+		clonedNumber[reference].position.x = (x - 5) * window.innerWidth/5 + 50;
 	}
 	
 	clonedNumber[clonedNumber.length-1].mousedown = clonedNumber[clonedNumber.length-1].touchstart = function(data)
@@ -187,7 +189,7 @@ function createBoxes(){
 		box[i + ((newAlarmPos - 1) * 4)] = new PIXI.Graphics();
 		box[i + ((newAlarmPos - 1) * 4)].beginFill(0xFFFFFF);
 		box[i + ((newAlarmPos - 1) * 4)].lineStyle(5, 0x000000);
-		box[i + ((newAlarmPos - 1) * 4)].drawRect(0, 0, window.innerWidth/5, window.innerWidth/10);
+		box[i + ((newAlarmPos - 1) * 4)].drawRect(0, 0, window.innerWidth/5, window.innerWidth/5);
 		box[i + ((newAlarmPos - 1) * 4)].position.x =  i * window.innerWidth/4 + (window.innerWidth/8 - 40);
 		box[i + ((newAlarmPos - 1) * 4)].position.y =  (newAlarmPos - 1) * window.innerHeight/5 + 100;
 		stage.addChild(box[i + ((newAlarmPos - 1) * 4)]);
