@@ -2,7 +2,12 @@
 show the number[i]s at the bottom of the screen. The number[i]s can be dragged and placed into boxes to determine the alarm
 */
 
-var stage = new PIXI.Stage(0x97c56e, true);
+var stage = new PIXI.Stage(0xFFF000, true);
+var background = PIXI.Texture.fromImage("images/fridges.png");
+var fridge = new PIXI.Sprite(background);
+fridge.width = screen.width;
+fridge.height = screen.height;
+stage.addChild(fridge);
 
 var renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight, null);
 
@@ -20,6 +25,7 @@ var number = [];
 //cloned numbers when clicked, 
 var clonedNumber = [];
 var box = [];
+var colon = [];
 var refNumber = [];
 var hour = [];
 var minute = [];
@@ -44,6 +50,8 @@ var deleteReference = 0;
 var text = new PIXI.Text(currentHour + " : " + currentMinute, {font:"50px Arial", fill:"red"});
 
 var pinnedNumber = [];
+
+//fridge background
 
 function init(){
 	var yPos = 1;
@@ -107,8 +115,8 @@ function duplicateNumber(x){
 	var reference = deleteReference;
 			console.log(clonedNumber.length);
 	var texture = PIXI.Texture.fromImage("images/" + x + ".png");
+	
 	clonedNumber[clonedNumber.length] = new PIXI.Sprite(texture);
-console.log(clonedNumber.length);
 	clonedNumber[clonedNumber.length-1].interactive = true;
 	clonedNumber[clonedNumber.length-1].buttonMode = true;
 	
@@ -161,11 +169,18 @@ console.log(clonedNumber.length);
 
 function createBoxes(){
 	//make a box that user puts the numbers in
+	var colons = PIXI.Texture.fromImage("images/colon.png");
+	colon[newAlarmPos-1] = new PIXI.Sprite(colons);
+	colon[newAlarmPos-1].position.x = screen.width/2;
+	colon[newAlarmPos-1].position.y = (newAlarmPos - 1) * window.innerHeight/5;
+	colon[newAlarmPos-1].scale.x = colon[newAlarmPos-1].scale.y = screen.width/2000;
+	stage.addChild(colon[newAlarmPos-1]);
+	
 	for(var i = 0; i < 4; i++){
 		box[i + ((newAlarmPos - 1) * 4)] = new PIXI.Graphics();
 		box[i + ((newAlarmPos - 1) * 4)].beginFill(0xFFFFFF);
 		box[i + ((newAlarmPos - 1) * 4)].lineStyle(5, 0x000000);
-		box[i + ((newAlarmPos - 1) * 4)].drawRect(0, 0, window.innerWidth/10, window.innerWidth/10);
+		box[i + ((newAlarmPos - 1) * 4)].drawRect(0, 0, window.innerWidth/5, window.innerWidth/10);
 		box[i + ((newAlarmPos - 1) * 4)].position.x =  i * window.innerWidth/4 + (window.innerWidth/8 - 40);
 		box[i + ((newAlarmPos - 1) * 4)].position.y =  (newAlarmPos - 1) * window.innerHeight/5 + 100;
 		stage.addChild(box[i + ((newAlarmPos - 1) * 4)]);
@@ -348,6 +363,9 @@ function animate() {
 	renderer.render(stage);
 }
 
+function testing(){
+
+}
 //update timer every one second
 var myVar=setInterval(function(){
 		timer(), checkAlarm();
@@ -357,5 +375,5 @@ createBoxes();
 createNumbers();
 init();
 animate();
-
+testing();
 
