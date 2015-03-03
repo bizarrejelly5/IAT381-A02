@@ -196,6 +196,7 @@ function createBoxes(){
 		box[i + ((newAlarmPos - 1) * 4)].drawRect(0, 0, window.innerWidth/5, window.innerWidth/5);
 		box[i + ((newAlarmPos - 1) * 4)].position.x =  i * window.innerWidth/4 + (window.innerWidth/8 - 80);
 		box[i + ((newAlarmPos - 1) * 4)].position.y =  (newAlarmPos - 1) * window.innerHeight/5 + 100;
+		box[i + ((newAlarmPos - 1) * 4)].alpha = 0.5;
 		stage.addChild(box[i + ((newAlarmPos - 1) * 4)]);
 
 		//wtf it needs console to work 
@@ -403,12 +404,13 @@ function deleteAlarm(){
 }
 
 //update timer every one second
+createBoxes();
 init();
 var myVar=setInterval(function(){
 		timer(), checkAlarm();
 },1000);
 addAlarm();
-createBoxes();
-createNumbers();
 animate();
 deleteAlarm();
+
+createNumbers();
