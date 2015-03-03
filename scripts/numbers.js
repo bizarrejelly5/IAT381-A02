@@ -43,9 +43,11 @@ var alarmLimit = 3;
 
 //alarm audio file
 var playAlarm = false;
-var audio = new Sound('audio/alarm.mp3');
+var audio = new Sound();
+audio.load('alarm.mp3');
 var stopAlarm = false;
-//audio.play();
+
+
 
 //tracks which number is deleted after 5 seconds
 var deleteReference = 0;
@@ -59,6 +61,10 @@ var pinnedNumber = [];
 
 function init(){
 	var yPos = 1;
+	audio.on('load', function () {
+		audio.play();
+});
+
 	for(var i = 0; i < 10; i++){
 		//createNumbers(i);
 		duplicateNumber(i);
