@@ -36,6 +36,7 @@ var currentMinute = [];
 var newAlarmPos = 1;
 var onOff, onOff2 = false;
 
+
 //only allow up to 3 alarms
 var alarmLimit = 3;
 
@@ -256,7 +257,7 @@ function intersect(obj, num, reference){
 		if(pinnedNumber[reference] == false){
 			if(num < 5){
 				clonedNumber[reference].position.y = window.innerHeight - 200;
-				clonedNumber[reference].position.x = x * window.innerWidth/5 + 50;
+				clonedNumber[reference].position.x = num * window.innerWidth/5 + 50;
 			}
 			else{
 				clonedNumber[reference].position.y = window.innerHeight - 100;
@@ -267,10 +268,14 @@ function intersect(obj, num, reference){
 }
 
 function checkAlarm(){
-		var texture = PIXI.Texture.fromImage("images/" + 1 + ".png");
-		var test = new PIXI.Sprite(texture);
-		test.interactive = true;
-		test.buttonMode = true;
+		var texture = PIXI.Texture.fromImage("images/wake_up.jpg");
+		var wake = new PIXI.Sprite(texture);
+		wake.position.x = window.innerWidth/2;
+		wake.position.y = window.innerHeight/2;
+		wake.anchor.x = wake.anchor.y = 0.5;
+		
+		wake.interactive = true;
+		wake.buttonMode = true;
 		
 	for (var i = 0; i < newAlarmPos; i++) {
 		if(hour[i * 2] == currentHour[0] && hour[i * 2 + 1] == currentHour[1] && minute[i * 2] == currentMinute[0] && minute[i * 2 + 1] == currentMinute[1] && playAlarm == false && stopAlarm == false){
@@ -280,16 +285,17 @@ function checkAlarm(){
 		 }
 	 }
 	 
-	 	test.mousedown = test.touchstart = function(data)
+	 	wake.mousedown = wake.touchstart = function(data)
 		{
 			this.data = data;
 			this.alpha = 0.9;
 			stopAlarm = true;
+			stage.removeChild(wake);
 		}
 		
 	 if(playAlarm == true && stopAlarm == false){
 		audio.play();
-		stage.addChild(test);
+		stage.addChild(wake);
 	 }
 	  else if(playAlarm == true && stopAlarm == true){
 		playAlarm = false;
