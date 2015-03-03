@@ -84,7 +84,7 @@ function timer(){
 	
 	//display the time at the top of the screen and update it
 	text.setText(currentHour + " : " + currentMinute, {font:"50px Arial", fill:"red"});
-	stage.addChild(text);
+	//stage.addChild(text);
 }
 
 //put the number[i]s on the bottom of the screen
@@ -182,11 +182,11 @@ function createBoxes(){
 	//make a box that user puts the numbers in
 	var colons = PIXI.Texture.fromImage("images/colon.png");
 	colon[newAlarmPos-1] = new PIXI.Sprite(colons);
-	//colon[newAlarmPos-1].position.x = screen.width/2;
-	colon[newAlarmPos-1].anchor.x = colon[newAlarmPos-1].anchor.y = 0.5
-	colon[newAlarmPos-1].position.x = screen.width/2;
-	colon[newAlarmPos-1].position.y = (newAlarmPos - 1) * window.innerHeight/5 + 200;
 	colon[newAlarmPos-1].scale.x = colon[newAlarmPos-1].scale.y = screen.width/2000;
+	colon[newAlarmPos-1].anchor.x = colon[newAlarmPos-1].anchor.y = 0.5
+	colon[newAlarmPos-1].position.x = window.innerWidth/2; //***************
+	colon[newAlarmPos-1].position.y = (newAlarmPos - 1) * window.innerHeight/5 + 200;
+	
 	stage.addChild(colon[newAlarmPos-1]);
 	
 	for(var i = 0; i < 4; i++){
@@ -282,7 +282,11 @@ function checkAlarm(){
 		wake.buttonMode = true;
 		
 	for (var i = 0; i < newAlarmPos; i++) {
-		if(hour[i * 2] == currentHour[0] && hour[i * 2 + 1] == currentHour[1] && minute[i * 2] == currentMinute[0] && minute[i * 2 + 1] == currentMinute[1] && playAlarm == false && stopAlarm == false){
+		if(hour[i * 2] == currentHour[0] && 
+		hour[i * 2 + 1] == currentHour[1] && 
+		minute[i * 2] == currentMinute[0] && 
+		minute[i * 2 + 1] == currentMinute[1] && 
+		playAlarm == false && stopAlarm == false){
 			console.log("Clock set to current time, used for testing");
 			//play alarm
 			playAlarm = true;
