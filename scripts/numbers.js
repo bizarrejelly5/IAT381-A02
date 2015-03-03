@@ -139,7 +139,7 @@ function duplicateNumber(x){
 	//clonedNumber[reference].position.y = Math.floor( Math.random() * (window.innerHeight - (window.innerHeight+100)) + window.innerHeight-100);
 	
 	if(x < 5){
-		clonedNumber[reference].position.y = window.innerHeight - 300;
+		clonedNumber[reference].position.y = window.innerHeight - 500;
 		clonedNumber[reference].position.x = x * window.innerWidth/5 + 50;
 	}
 	else{
