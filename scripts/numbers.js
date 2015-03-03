@@ -43,11 +43,8 @@ var alarmLimit = 3;
 
 //alarm audio file
 var playAlarm = false;
-var audio = new Sound();
-audio.load('alarm.mp3');
+var audio = new Audio('audio/alarm.mp3');
 var stopAlarm = false;
-
-
 
 //tracks which number is deleted after 5 seconds
 var deleteReference = 0;
@@ -61,10 +58,8 @@ var pinnedNumber = [];
 
 function init(){
 	var yPos = 1;
-	audio.on('load', function () {
-		audio.play();
-});
-
+	var texture = PIXI.Texture.fromImage("images/add.png");
+	addButton = new PIXI.Sprite(texture);
 	for(var i = 0; i < 10; i++){
 		//createNumbers(i);
 		duplicateNumber(i);
@@ -313,13 +308,13 @@ function checkAlarm(){
 
 function addAlarm(){
 	//alarm text
-	var texture = PIXI.Texture.fromImage("images/add.jpg");
-	addButton = new PIXI.Sprite(texture);
-	addButton.interactive = true;
-	addButton.buttonMode = true;
+
 	addButton.anchor.x = 0.5;
 	addButton.position.x = window.innerWidth/2 - 100;
 	addButton.position.y = (newAlarmPos - 1) * window.innerHeight/5 + 300;
+	
+	addButton.interactive = true;
+	addButton.buttonMode = true;
 	stage.addChild(addButton);
 
 	addButton.mousedown = addButton.touchstart = function(data){
@@ -329,7 +324,7 @@ function addAlarm(){
 			newAlarmPos += 1;
 			createBoxes();
 			addAlarm();	
-			
+			//stage.removeChild(addButton);
 			deleteButton.position.y = (newAlarmPos - 1) * window.innerHeight/5 + 300;
 		}
 	};
@@ -380,7 +375,7 @@ function animate() {
 }
 
 function deleteAlarm(){
-	var texture = PIXI.Texture.fromImage("images/delete.jpg");
+	var texture = PIXI.Texture.fromImage("images/delete.png");
 	deleteButton = new PIXI.Sprite(texture);
 	deleteButton.anchor.x = 0.5;
 	deleteButton.position.x = window.innerWidth/2 + 100;
@@ -401,17 +396,19 @@ function deleteAlarm(){
 			alarmLimit += 1;
 			newAlarmPos -= 1;
 			deleteButton.position.y = (newAlarmPos - 1) * window.innerHeight/5 + 300;
+			addButton.position.y = (newAlarmPos - 1) * window.innerHeight/5 + 300;
+			stage.removeChild(colon[newAlarmPos]);
 		}
 	};
 }
 
 //update timer every one second
+init();
 var myVar=setInterval(function(){
 		timer(), checkAlarm();
 },1000);
 addAlarm();
 createBoxes();
 createNumbers();
-init();
 animate();
 deleteAlarm();
