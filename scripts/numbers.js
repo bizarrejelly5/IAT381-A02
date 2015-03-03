@@ -139,12 +139,12 @@ function duplicateNumber(x){
 	//clonedNumber[reference].position.y = Math.floor( Math.random() * (window.innerHeight - (window.innerHeight+100)) + window.innerHeight-100);
 	
 	if(x < 5){
-		clonedNumber[reference].position.y = window.innerHeight - 500;
+		clonedNumber[reference].position.y = window.innerHeight - 300;
 		clonedNumber[reference].position.x = x * window.innerWidth/5 + 50;
 	}
 	else{
 		clonedNumber[reference].position.y = window.innerHeight - 100;
-		clonedNumber[reference].position.x = (x - 5) * window.innerWidth/5 + 50;
+		clonedNumber[reference].position.x = (x - 5) * window.innerWidth/5 + 100;
 	}
 	
 	clonedNumber[clonedNumber.length-1].mousedown = clonedNumber[clonedNumber.length-1].touchstart = function(data)
