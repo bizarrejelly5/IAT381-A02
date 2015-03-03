@@ -140,7 +140,7 @@ function duplicateNumber(x){
 	
 	if(x < 5){
 		clonedNumber[reference].position.y = window.innerHeight - 300;
-		clonedNumber[reference].position.x = x * window.innerWidth/5 + 50;
+		clonedNumber[reference].position.x = x * window.innerWidth/5 + 100;
 	}
 	else{
 		clonedNumber[reference].position.y = window.innerHeight - 100;
