@@ -254,8 +254,14 @@ function intersect(obj, num, reference){
 	//remove the number after 5 seconds
 	var something = setInterval(function(){
 		if(pinnedNumber[reference] == false){
-			clonedNumber[reference].position.x = num * window.innerWidth/10 + 50
-			clonedNumber[reference].position.y = window.innerHeight - 100;
+			if(num < 5){
+				clonedNumber[reference].position.y = window.innerHeight - 200;
+				clonedNumber[reference].position.x = x * window.innerWidth/5 + 50;
+			}
+			else{
+				clonedNumber[reference].position.y = window.innerHeight - 100;
+				clonedNumber[reference].position.x = (num - 5) * window.innerWidth/5 + 50;
+			}
 		}
 	},5000);
 }
